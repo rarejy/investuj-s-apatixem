@@ -11,7 +11,7 @@ const User = require('./models/User');
 const app = express();
 
 // MongoDB připojení (přímo Railway URI)
-const mongoURI = 'mongodb://mongo:oXNeHasRntyygJhoBthkczXTmXBovCIT@shortline.proxy.rlwy.net:31490';
+const mongoURI = 'mongodb://mongo:mfutLkgTpuBkWFDQDPKSNMmAwrXgCQkp@mainline.proxy.rlwy.net:37537';
 
 mongoose.connect(mongoURI, {
   useNewUrlParser: true,
