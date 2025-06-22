@@ -1,0 +1,371 @@
+<!DOCTYPE html>
+<html lang="cs" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Poradce Jakub Mácha</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+  <script src="https://unpkg.com/alpinejs@3.10.5/dist/cdn.min.js" defer></script>
+  <style>
+    :root {
+      --gold-light: #d4af37;
+      --gold-dark: #b8860b;
+      --gold-darker: #daa520;
+    }
+    @media (max-width: 640px) {
+  .banner {
+    height: 80px;
+    margin-bottom: 1rem;
+  }
+  .form-card {
+    margin: 0 1rem;
+  }
+  .form-padding {
+    padding: 1.5rem;
+  }
+  .form-input {
+    padding: 0.75rem;
+  }
+  .form-button {
+    padding: 0.75rem;
+  }
+}
+    .form-enter { transition: all 0.3s ease-out; }
+    .form-enter-from { opacity: 0; transform: translateY(10px); }
+    .form-enter-to { opacity: 1; transform: translateY(0); }
+    .banner {
+      background-image: url('banner.png');
+      background-size: contain;
+      background-position: center;
+      background-repeat: no-repeat;
+      height: 120px;
+    }
+    .golden-gradient {
+      background: linear-gradient(135deg, var(--gold-dark) 0%, var(--gold-darker) 50%, var(--gold-light) 100%);
+    }
+    .golden-text {
+      color: var(--gold-darker);
+    }
+    .golden-border {
+      border-color: var(--gold-darker);
+    }
+    .golden-focus:focus {
+      --tw-ring-color: var(--gold-darker);
+    }
+    /* Styly pro checkbox */
+    .checkbox-container {
+      display: block;
+      position: relative;
+      padding-left: 30px;
+      cursor: pointer;
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
+    }
+    .checkbox-container input {
+      position: absolute;
+      opacity: 0;
+      cursor: pointer;
+      height: 0;
+      width: 0;
+    }
+    .checkmark {
+      position: absolute;
+      top: 0;
+      left: 0;
+      height: 20px;
+      width: 20px;
+      background-color: #fff;
+      border: 2px solid #d1d5db;
+      border-radius: 4px;
+      transition: all 0.2s;
+    }
+    .dark .checkmark {
+      background-color: #374151;
+      border-color: #4b5563;
+    }
+    .checkbox-container:hover input ~ .checkmark {
+      border-color: #9ca3af;
+    }
+    .dark .checkbox-container:hover input ~ .checkmark {
+      border-color: #6b7280;
+    }
+    .checkbox-container input:checked ~ .checkmark {
+      background-color: var(--gold-darker);
+      border-color: var(--gold-darker);
+    }
+    .checkmark:after {
+      content: "";
+      position: absolute;
+      display: none;
+    }
+    .checkbox-container input:checked ~ .checkmark:after {
+      display: block;
+    }
+    .checkbox-container .checkmark:after {
+      left: 6px;
+      top: 2px;
+      width: 5px;
+      height: 10px;
+      border: solid white;
+      border-width: 0 2px 2px 0;
+      -webkit-transform: rotate(45deg);
+      -ms-transform: rotate(45deg);
+      transform: rotate(45deg);
+    }
+    /* Dark mode transitions */
+    .transition-colors {
+      transition-property: background-color, border-color, color, fill, stroke;
+      transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
+      transition-duration: 300ms;
+    }
+    /* Custom dark mode colors */
+    .dark .form-card {
+      background-color: #1f2937;
+      border-color: #374151;
+    }
+    .dark .form-footer {
+      background-color: #111827;
+    }
+    .dark .form-input {
+      background-color: #374151;
+      border-color: #4b5563;
+      color: #f3f4f6;
+    }
+    .dark .form-input::placeholder {
+      color: #9ca3af;
+    }
+    .dark .form-label {
+      color: #e5e7eb;
+    }
+    .dark .progress-bg {
+      background-color: #374151;
+    }
+    /* GDPR panel */
+    .gdpr-panel {
+      position: fixed;
+      top: 0;
+      right: 0;
+      width: 100%;
+      max-width: 400px;
+      height: 100vh;
+      z-index: 100;
+      transform: translateX(100%);
+      transition: transform 0.3s ease-out;
+    }
+    .gdpr-panel.active {
+      transform: translateX(0);
+    }
+    .gdpr-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100vh;
+      background-color: rgba(0,0,0,0.5);
+      z-index: 99;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+    .gdpr-overlay.active {
+      opacity: 1;
+      pointer-events: all;
+    }
+  </style>
+</head>
+<body class="bg-gray-50 text-gray-800 dark:bg-gray-900 dark:text-gray-100 transition-colors duration-300" x-data="{ 
+    darkMode: false,
+    progress: 0,
+    gdprOpen: false,
+    updateProgress() {
+      let filled = 0;
+      if(document.getElementById('jmeno').value.length > 0) filled++;
+      if(document.getElementById('prijmeni').value.length > 0) filled++;
+      if(document.getElementById('telefon').value.length > 0) filled++;
+      if(document.getElementById('gdpr').checked) filled++;
+      this.progress = Math.min(100, (filled / 4) * 100);
+    },
+    init() {
+      const savedMode = localStorage.getItem('darkMode');
+      const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+      this.darkMode = savedMode ? savedMode === 'true' : systemPrefersDark;
+      document.documentElement.classList.toggle('dark', this.darkMode);
+      this.updateProgress();
+    },
+    toggleDarkMode() {
+      this.darkMode = !this.darkMode;
+      localStorage.setItem('darkMode', this.darkMode);
+      document.documentElement.classList.toggle('dark', this.darkMode);
+    },
+    toggleGdprPanel() {
+      this.gdprOpen = !this.gdprOpen;
+    }
+  }" x-init="init()">
+  
+  <!-- GDPR Overlay -->
+  <div class="gdpr-overlay" :class="{ 'active': gdprOpen }" @click="toggleGdprPanel()"></div>
+
+  <!-- GDPR Panel -->
+  <div class="gdpr-panel bg-white dark:bg-gray-800 shadow-xl" :class="{ 'active': gdprOpen }">
+    <div class="h-full overflow-y-auto p-6">
+      <div class="flex justify-between items-center mb-6">
+        <h2 class="text-xl font-bold golden-text">Informace o zpracování osobních údajů</h2>
+        <button @click="toggleGdprPanel()" class="text-gray-500 hover:text-gray-700 dark:hover:text-gray-300">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+      
+      <div class="space-y-4 text-sm text-gray-700 dark:text-gray-300">
+        <p>Tímto vás informuji, že jako investiční poradce a zároveň správce osobních údajů ve smyslu nařízení Evropského parlamentu a Rady (EU) 2016/679 (GDPR) zpracovávám vaše osobní údaje v rozsahu jméno, příjmení a telefonní číslo.</p>
+        
+        <h3 class="font-bold mt-4 golden-text">Kdo údaje zpracovává:</h3>
+        <p>Jméno: Jakub Mácha<br>
+        IČO: 23284285<br>
+        E-mail: jakubmacha@seznam.cz</p>
+        
+        <h3 class="font-bold mt-4 golden-text">Účel zpracování:</h3>
+        <p>Údaje slouží výhradně k tomu, abych vás mohl kontaktovat ohledně nezávazné konzultace či informací k možnostem investování do drahých kovů (zlato, stříbro) a kryptoměn (např. Bitcoin).</p>
+        
+        <h3 class="font-bold mt-4 golden-text">Doba uchování údajů:</h3>
+        <p>Údaje budou uchovány pouze po nezbytně nutnou dobu – nejdéle do uskutečnění kontaktu nebo do odvolání souhlasu. Poté budou bezpečně smazány.</p>
+        
+        <h3 class="font-bold mt-4 golden-text">Právní základ zpracování:</h3>
+        <p>Zpracování probíhá na základě vašeho souhlasu dle čl. 6 odst. 1 písm. a) GDPR. Souhlas můžete kdykoli odvolat kontaktováním na uvedený e-mail.</p>
+        
+        <h3 class="font-bold mt-4 golden-text">Předávání údajů:</h3>
+        <p>Vaše údaje nebudou předávány žádným třetím stranám a jsou používány pouze pro účely uvedené výše.</p>
+
+        <h3 class="font-bold mt-4 golden-text">Vaše práva:</h3>
+        <p>Máte právo na přístup ke svým údajům, jejich opravu nebo výmaz, dále na omezení zpracování, přenositelnost údajů a případně právo podat stížnost u Úřadu pro ochranu osobních údajů (www.uoou.cz), pokud byste měli pocit, že s údaji není nakládáno v souladu se zákonem.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Dark mode toggle -->
+  <button @click="toggleDarkMode()" 
+          class="fixed top-4 right-4 z-50 p-2 rounded-full bg-white/90 dark:bg-gray-800/90 shadow-lg transition-colors">
+    <svg x-show="!darkMode" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-yellow-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+    </svg>
+    <svg x-show="darkMode" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-yellow-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+    </svg>
+  </button>
+
+  <div class="min-h-screen flex items-center justify-center px-4 py-12 transition-colors">
+    <div class="w-full max-w-md transform transition-all duration-500 hover:scale-[1.01]">
+      <!-- Banner -->
+      <div class="banner mb-6"></div>
+
+      <!-- Progress bar -->
+      <div class="mb-8 transition-colors">
+        <div class="flex justify-between mb-2 text-sm font-medium text-gray-500 dark:text-gray-400">
+          <span x-text="`${Math.round(progress)}% vyplněno`"></span>
+          <span x-show="progress < 100">Dokončete formulář</span>
+          <span x-show="progress === 100" class="text-green-600 dark:text-green-400">Vše vyplněno!</span>
+        </div>
+        <div class="w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2.5 progress-bg">
+          <div class="golden-gradient h-2.5 rounded-full transition-all duration-300" 
+               :style="`width: ${progress}%`"></div>
+        </div>
+      </div>
+
+      <!-- Form card -->
+      <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl overflow-hidden border border-gray-200 dark:border-gray-700 form-card transition-colors">
+        <!-- Logo header -->
+        <div class="golden-gradient p-6 text-center">
+          <div class="animate__animated animate__fadeIn">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mx-auto text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+            </svg>
+            <h1 class="mt-4 text-2xl font-bold text-white">Váš krok ke svobodě – se zlatem, stříbrem a Bitcoinem.</h1>
+            <p class="text-yellow-100 mt-1">Stabilita minulosti. Technologie budoucnosti. Jste připraveni?</p>
+          </div>
+        </div>
+
+        <!-- Form -->
+        <form action="/" method="POST" class="p-6 space-y-6" @input="updateProgress()">
+          <!-- Jméno -->
+          <div class="form-enter" style="animation-delay: 0.1s">
+            <label for="jmeno" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 form-label">Jméno</label>
+            <div class="relative">
+              <input type="text" id="jmeno" name="jmeno" required
+                     class="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-yellow-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white transition-all golden-focus form-input"
+                     placeholder="Jan"
+                     @input="updateProgress()">
+              <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
+                  <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd" />
+                </svg>
+              </div>
+            </div>
+          </div>
+
+          <!-- Příjmení -->
+          <div class="form-enter" style="animation-delay: 0.2s">
+            <label for="prijmeni" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 form-label">Příjmení</label>
+            <div class="relative">
+              <input type="text" id="prijmeni" name="prijmeni" required
+                     class="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-yellow-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white transition-all golden-focus form-input"
+                     placeholder="Novák"
+                     @input="updateProgress()">
+            </div>
+          </div>
+
+          <!-- Telefon -->
+          <div class="form-enter" style="animation-delay: 0.3s">
+            <label for="telefon" class="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 form-label">Telefon</label>
+            <div class="relative">
+              <input type="tel" id="telefon" name="telefon" required
+                     class="w-full px-4 py-3 rounded-lg border border-gray-300 dark:border-gray-600 focus:ring-2 focus:ring-yellow-500 focus:border-transparent bg-white dark:bg-gray-700 text-gray-900 dark:text-white transition-all golden-focus form-input"
+                     placeholder="+420 123 456 789"
+                     @input="updateProgress()">
+              <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-400" viewBox="0 0 20 20" fill="currentColor">
+                  <path d="M2 3a1 1 0 011-1h2.153a1 1 0 01.986.836l.74 4.435a1 1 0 01-.54 1.06l-1.548.773a11.037 11.037 0 006.105 6.105l.774-1.548a1 1 0 011.059-.54l4.435.74a1 1 0 01.836.986V17a1 1 0 01-1 1h-2C7.82 18 2 12.18 2 5V3z" />
+                </svg>
+              </div>
+            </div>
+          </div>
+
+          <!-- GDPR souhlas -->
+          <div class="form-enter" style="animation-delay: 0.4s">
+            <label class="checkbox-container text-sm">
+              <input type="checkbox" id="gdpr" name="gdpr" required @change="updateProgress()">
+              <span class="checkmark"></span>
+              <span class="font-medium text-gray-700 dark:text-gray-300 ml-2 form-label">Souhlasím se zpracováním osobních údajů</span>
+              <p class="text-gray-500 dark:text-gray-400 ml-8 mt-1">Více informací v <a href="#" @click.prevent="toggleGdprPanel()" class="golden-text hover:underline">ochraně osobních údajů</a></p>
+            </label>
+          </div>
+
+          <!-- Submit button -->
+          <div class="form-enter" style="animation-delay: 0.5s">
+            <button type="submit"
+                    class="w-full golden-gradient hover:from-yellow-700 hover:to-yellow-500 text-white font-medium py-3 px-4 rounded-lg shadow-md hover:shadow-lg transition-all transform hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2"
+                    :class="{ 'opacity-50 cursor-not-allowed': progress < 100 }"
+                    :disabled="progress < 100">
+              <span x-show="progress < 100">Dokončete formulář</span>
+              <span x-show="progress === 100">Zamluvit konzultaci zdarma</span>
+              <svg x-show="progress === 100" xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 inline ml-1 -mr-1" viewBox="0 0 20 20" fill="currentColor">
+                <path fill-rule="evenodd" d="M10.293 5.293a1 1 0 011.414 0l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414-1.414L12.586 11H5a1 1 0 110-2h7.586l-2.293-2.293a1 1 0 010-1.414z" clip-rule="evenodd" />
+              </svg>
+            </button>
+          </div>
+        </form>
+
+        <!-- Footer -->
+        <div class="px-6 py-4 bg-gray-50 dark:bg-gray-700 text-center form-footer transition-colors">
+          <p class="text-xs text-gray-500 dark:text-gray-400">
+            © 2025 Poradce Jakub Mácha. Všechna práva vyhrazena.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
