@@ -10,8 +10,10 @@ const User = require('./models/User');
 
 const app = express();
 
-// MongoDB připojení
-mongoose.connect('mongodb://localhost/investuj-apatix', {
+// MongoDB připojení (přímo Railway URI)
+const mongoURI = 'mongodb://mongo:oXNeHasRntyygJhoBthkczXTmXBovCIT@mongodb.railway.internal:27017';
+
+mongoose.connect(mongoURI, {
   useNewUrlParser: true,
   useUnifiedTopology: true
 })
@@ -74,7 +76,7 @@ app.use('/auth', require('./routes/auth'));
 app.use('/dashboard', require('./routes/dashboard'));
 
 // Spuštění serveru
-const PORT = 3000;
+const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`🚀 Server běží na http://localhost:${PORT}`);
 });
