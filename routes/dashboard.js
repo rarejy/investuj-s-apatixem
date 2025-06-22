@@ -91,7 +91,7 @@ router.post('/delete-note/:leadId/:noteId', async (req, res) => {
     
     await Lead.findByIdAndUpdate(
       leadId,
-      { $pull: { poznamky: { _id: noteId } }
+      { $pull: { poznamky: { _id: noteId } } }
     );
 
     req.flash('success', 'Poznámka byla úspěšně smazána');
