@@ -1,24 +1,42 @@
 const mongoose = require('mongoose');
 
-const LeadSchema = new mongoose.Schema({
-  jmeno: String,
-  prijmeni: String,
-  telefon: String,
-  email: String,
-  status: {
+const noteSchema = new mongoose.Schema({
+  text: {
     type: String,
-    default: 'nedomluvené',
-    enum: ['domluvené', 'nedomluvené']
+    required: true
   },
-  posledniVolani: Date,
-  poznamky: [{
-    text: String,
-    datum: Date
-  }],
   createdAt: {
     type: Date,
     default: Date.now
   }
 });
 
-module.exports = mongoose.model('Lead', LeadSchema);
+const leadSchema = new mongoose.Schema({
+  jmeno: {
+    type: String,
+    required: true
+  },
+  prijmeni: {
+    type: String,
+    required: true
+  },
+  telefon: {
+    type: String,
+    required: true
+  },
+  email: {
+    type: String
+  },
+  status: {
+    type: String,
+    enum: ['new', 'agreed', 'disagreed'],
+    default: 'new'
+  },
+  notes: [noteSchema],
+  createdAt: {
+    type: Date,
+    default: Date.now
+  }
+});
+
+module.exports = mongoose.model('Lead', leadSchema);
