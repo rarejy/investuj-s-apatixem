@@ -18,12 +18,12 @@ mongoose.connect('mongodb://mongo:mfutLkgTpuBkWFDQDPKSNMmAwrXgCQkp@mainline.prox
 
 // Session middleware
 app.use(session({
-  secret: 'vas-super-tajny-klic-minimalne-32-znaku', // Změňte na silný klíč
+  secret: 'B7#zvP9qK!0LfdX$sn@eM6WaR3tUjg82', // Změňte na silný klíč
   resave: false,
   saveUninitialized: false,
   cookie: { 
     secure: false, // V produkci nastavte na true (pouze s HTTPS)
-    maxAge: 24 * 60 * 60 * 1000 // 1 den
+    maxAge: 30 * 60 * 1000 // 30 minut
   }
 }));
 
