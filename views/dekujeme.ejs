@@ -5,53 +5,45 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Děkujeme</title>
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
   <script src="https://unpkg.com/alpinejs@3.10.5/dist/cdn.min.js" defer></script>
   <style>
     :root {
-      --gold-light: #d4af37;
-      --gold-dark: #b8860b;
-      --gold-darker: #daa520;
+      --primary: #1e40af;
+      --primary-light: #3b82f6;
+      --primary-dark: #1e3a8a;
+      --accent: #10b981;
     }
-    .golden-gradient {
-      background: linear-gradient(135deg, var(--gold-dark) 0%, var(--gold-darker) 50%, var(--gold-light) 100%);
+    
+    body {
+      background-color: #0f172a;
+      color: #e2e8f0;
     }
-    .golden-text {
-      color: var(--gold-darker);
+    
+    .glass-card {
+      background: rgba(15, 23, 42, 0.8);
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.1);
     }
-    .golden-border {
-      border-color: var(--gold-darker);
+    
+    .header-gradient {
+      background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 50%, #3b82f6 100%);
     }
-    .transition-colors {
-      transition-property: background-color, border-color, color, fill, stroke;
-      transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1);
-      transition-duration: 300ms;
+    
+    .hover-scale {
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
     }
-    .banner {
-      background-image: url('banner.png');
-      background-size: contain;
-      background-position: center;
-      background-repeat: no-repeat;
-      height: 120px;
+    
+    .hover-scale:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
     }
-    /* Dark mode specific styles */
-    .dark .form-card {
-      background-color: #1f2937;
-      border-color: #374151;
+    
+    .info-box {
+      background-color: rgba(30, 58, 138, 0.2);
+      border: 1px solid #1e40af;
     }
-    .dark .form-footer {
-      background-color: #111827;
-    }
-    .dark .info-box {
-      background-color: #1e3a8a;
-      border-color: #1e40af;
-    }
-    .dark .info-box li {
-      color: #93c5fd;
-    }
-    .dark .info-box h3 {
-      color: #bfdbfe;
-    }
+    
     /* Mobile optimizations */
     @media (max-width: 640px) {
       .banner {
@@ -76,78 +68,53 @@
     };
   </script>
 </head>
-<body class="bg-gray-50 text-gray-800 dark:bg-gray-900 dark:text-gray-100 transition-colors duration-300" x-data="{ 
-    darkMode: false,
-    init() {
-      const savedMode = localStorage.getItem('darkMode');
-      const systemPrefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-      this.darkMode = savedMode ? savedMode === 'true' : systemPrefersDark;
-      document.documentElement.classList.toggle('dark', this.darkMode);
-    },
-    toggleDarkMode() {
-      this.darkMode = !this.darkMode;
-      localStorage.setItem('darkMode', this.darkMode);
-      document.documentElement.classList.toggle('dark', this.darkMode);
-    }
-  }" x-init="init()">
-  
-  <!-- Dark mode toggle -->
-  <button @click="toggleDarkMode()" 
-          class="fixed top-4 right-4 z-50 p-2 rounded-full bg-white/90 dark:bg-gray-800/90 shadow-lg transition-colors">
-    <svg x-show="!darkMode" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-yellow-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
-    </svg>
-    <svg x-show="darkMode" xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-yellow-300" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
-    </svg>
-  </button>
-
-  <div class="min-h-screen flex items-center justify-center px-4 py-12 transition-colors">
-    <div class="w-full max-w-md transform transition-all duration-500 hover:scale-[1.01]">
+<body>
+  <div class="min-h-screen flex items-center justify-center px-4 py-12">
+    <div class="w-full max-w-md">
       <!-- Banner -->
       <div class="banner mb-6"></div>
 
       <!-- Thank you card -->
-      <div class="bg-white dark:bg-gray-800 rounded-2xl shadow-xl overflow-hidden border border-gray-200 dark:border-gray-700 form-card transition-colors">
+      <div class="glass-card rounded-2xl shadow-xl overflow-hidden hover-scale">
         <!-- Logo header -->
-        <div class="golden-gradient p-6 text-center">
-          <div class="animate__animated animate__fadeIn">
+        <div class="header-gradient p-6 text-center">
+          <div>
             <svg xmlns="http://www.w3.org/2000/svg" class="h-12 w-12 mx-auto text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
             </svg>
-            <h1 class="mt-4 text-2xl font-bold text-white">Váš krok ke svobodě – se zlatem, stříbrem a Bitcoinem.</h1>
-            <p class="text-yellow-100 mt-1">Stabilita minulosti. Technologie budoucnosti. Jste připraveni?</p>
+            <h1 class="mt-4 text-2xl font-bold text-white">Váš krok ke svobodě</h1>
+            <p class="text-blue-200 mt-1">Se zlatem, stříbrem a Bitcoinem</p>
           </div>
         </div>
 
         <!-- Content -->
         <div class="p-8 text-center card-padding">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 mx-auto text-green-500 mb-4 animate__animated animate__bounceIn" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 mx-auto text-green-500 mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
           </svg>
           
-          <h2 class="text-2xl font-bold text-blue-600 dark:text-blue-300 mb-4 thank-you-text">Děkujeme, <span class="text-blue-600 dark:text-blue-300"><%= jmeno %></span>!</h2>
+          <h2 class="text-2xl font-bold text-blue-400 mb-4 thank-you-text">Děkujeme, <span class="text-white"><%= jmeno %></span>!</h2>
           
-          <p class="text-gray-600 dark:text-gray-300 mb-6">
+          <p class="text-gray-300 mb-6">
             Vaše žádost byla úspěšně odeslána. Brzy vás budeme kontaktovat na uvedený telefonní číslo, abychom domluvili schůzku.
           </p>
           
-          <div class="bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800 rounded-lg p-4 mb-6 text-left info-box transition-colors">
-            <h3 class="font-bold text-blue-800 dark:text-blue-200 mb-2">Co bude dál?</h3>
-            <ul class="list-disc list-inside text-sm text-blue-700 dark:text-blue-300 space-y-1">
+          <div class="info-box rounded-lg p-4 mb-6 text-left">
+            <h3 class="font-bold text-blue-300 mb-2">Co bude dál?</h3>
+            <ul class="list-disc list-inside text-sm text-white-200 space-y-1">
               <li>Do 24 hodin vás kontaktujeme</li>
               <li>Domluvíme si termín schůzky</li>
             </ul>
           </div>
           
-          <a href="/" class="inline-block golden-gradient hover:from-yellow-700 hover:to-yellow-500 text-white font-medium py-3 px-6 rounded-lg shadow-md hover:shadow-lg transition-all transform hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2">
+          <a href="/" class="inline-block bg-blue-600 hover:bg-blue-700 text-white font-medium py-3 px-6 rounded-lg shadow-md hover:shadow-lg transition-all transform hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 focus:ring-offset-slate-800">
             Zpět na úvodní stránku
           </a>
         </div>
 
         <!-- Footer -->
-        <div class="px-6 py-4 bg-gray-50 dark:bg-gray-700 text-center form-footer transition-colors">
-          <p class="text-xs text-gray-500 dark:text-gray-400">
+        <div class="px-6 py-4 bg-slate-800 text-center">
+          <p class="text-xs text-gray-400">
             © 2025 Poradce Jakub Mácha. Všechna práva vyhrazena.
           </p>
         </div>
