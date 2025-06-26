@@ -9,7 +9,7 @@ const authRouter = require('./routes/auth');
 const app = express();
 
 // Připojení k databázi
-mongoose.connect('mongodb://mongo:mfutLkgTpuBkWFDQDPKSNMmAwrXgCQkp@mainline.proxy.rlwy.net:37537', {
+mongoose.connect('mongodb://localhost:27017/', {
   useNewUrlParser: true,
   useUnifiedTopology: true
 })
