@@ -20,7 +20,7 @@ router.get('/', requireAuth, async (req, res) => {
   }
 });
 
-// Změna stavu leadu - OPRAVENO
+// Změna stavu leadu
 router.post('/update-status/:id', requireAuth, async (req, res) => {
   try {
     const lead = await Lead.findById(req.params.id);
@@ -31,7 +31,6 @@ router.post('/update-status/:id', requireAuth, async (req, res) => {
       });
     }
 
-    // Opravená logika pro změnu statusu
     if (lead.status === 'new' || lead.status === 'disagreed') {
       lead.status = 'agreed';
     } else if (lead.status === 'agreed') {
@@ -40,7 +39,6 @@ router.post('/update-status/:id', requireAuth, async (req, res) => {
     
     await lead.save();
 
-    // Přesměrování místo JSON response pro formulář
     res.redirect('/dashboard');
   } catch (error) {
     console.error('Chyba při změně stavu:', error);
@@ -50,7 +48,7 @@ router.post('/update-status/:id', requireAuth, async (req, res) => {
   }
 });
 
-// Smazání leadu - OPRAVENO
+// Smazání leadu
 router.post('/delete/:id', requireAuth, async (req, res) => {
   try {
     await Lead.findByIdAndDelete(req.params.id);
@@ -63,80 +61,17 @@ router.post('/delete/:id', requireAuth, async (req, res) => {
   }
 });
 
-// Přidání poznámky
-router.post('/add-note/:id', requireAuth, async (req, res) => {
-  try {
-    const { text } = req.body;
-    if (!text || text.trim() === '') {
-      return res.status(400).json({ 
-        success: false, 
-        message: 'Text poznámky je povinný' 
+// Odhlášení uživatele
+router.post('/logout', requireAuth, (req, res) => {
+  req.session.destroy((err) => {
+    if (err) {
+      console.error('Chyba při odhlašování:', err);
+      return res.status(500).render('error', { 
+        message: 'Chyba při odhlašování' 
       });
     }
-
-    const updatedLead = await Lead.findByIdAndUpdate(
-      req.params.id,
-      { $push: { notes: { 
-        text: text.trim(),
-        createdAt: new Date(),
-        createdBy: req.session.user.username 
-      }}},
-      { new: true }
-    );
-
-    res.json({ 
-      success: true, 
-      notes: updatedLead.notes 
-    });
-  } catch (error) {
-    console.error('Chyba při přidávání poznámky:', error);
-    res.status(500).json({ 
-      success: false, 
-      message: 'Chyba serveru' 
-    });
-  }
-});
-
-// Aktualizace poznámky
-router.put('/update-note/:leadId/:noteIndex', requireAuth, async (req, res) => {
-  try {
-    const { text } = req.body;
-    if (!text || text.trim() === '') {
-      return res.status(400).json({ success: false });
-    }
-
-    const lead = await Lead.findById(req.params.leadId);
-    if (!lead || !lead.notes[req.params.noteIndex]) {
-      return res.status(404).json({ success: false });
-    }
-    
-    lead.notes[req.params.noteIndex].text = text.trim();
-    lead.notes[req.params.noteIndex].updatedAt = new Date();
-    await lead.save();
-    
-    res.json({ success: true });
-  } catch (error) {
-    console.error('Chyba při aktualizaci poznámky:', error);
-    res.status(500).json({ success: false });
-  }
-});
-
-// Smazání poznámky - OPRAVENO metoda
-router.post('/delete-note/:leadId/:noteIndex', requireAuth, async (req, res) => {
-  try {
-    const lead = await Lead.findById(req.params.leadId);
-    if (!lead || !lead.notes[req.params.noteIndex]) {
-      return res.status(404).json({ success: false });
-    }
-    
-    lead.notes.splice(req.params.noteIndex, 1);
-    await lead.save();
-    
-    res.json({ success: true });
-  } catch (error) {
-    console.error('Chyba při mazání poznámky:', error);
-    res.status(500).json({ success: false });
-  }
+    res.redirect('/auth/login');
+  });
 });
 
 module.exports = router;
